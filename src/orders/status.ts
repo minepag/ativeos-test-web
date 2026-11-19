@@ -1,4 +1,4 @@
-// The same lifecycle as the API (minepag/opelo-test-api, src/orders/status.ts).
+// The same lifecycle as the API (minepag/ativeos-test-api, src/orders/status.ts).
 export const orderStatuses = ["pendente", "pago", "enviado", "entregue", "cancelado"] as const
 
 export type OrderStatus = (typeof orderStatuses)[number]

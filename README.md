@@ -1,7 +1,7 @@
-# opelo-test-web
+# ativeos-test-web
 
 Painel de pedidos em React usado para testar os agentes do AtiveOS (Forge e QA, incluindo o QA visual) num projeto
-front-end. Consome a API de testes ([minepag/opelo-test-api](https://github.com/minepag/opelo-test-api)) ou, sem
+front-end. Consome a API de testes ([minepag/ativeos-test-api](https://github.com/minepag/ativeos-test-api)) ou, sem
 ela, uma API falsa em memória com os mesmos status e transições.
 
 ## O que tem

@@ -21,7 +21,7 @@ export type OrdersApi = {
 export const apiError = (message: string, status: number) =>
   Object.assign(new Error(message), { name: "ApiError" as const, status })
 
-// The test API (minepag/opelo-test-api): errors answer { erro, detalhes? }.
+// The test API (minepag/ativeos-test-api): errors answer { erro, detalhes? }.
 export const createHttpOrdersApi = (
   baseUrl: string,
   fetchImplementation: typeof fetch = fetch,
