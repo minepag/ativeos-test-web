@@ -126,6 +126,24 @@ button.ghost {
   flex-basis: 100%;
 }
 
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.search {
+  flex: 1 1 220px;
+  max-width: 320px;
+}
+
+.search input {
+  width: 100%;
+  min-width: 0;
+}
+
 .filters {
   display: flex;
   flex-wrap: wrap;
@@ -142,6 +160,17 @@ button.ghost {
   background: var(--text);
   border-color: var(--text);
   color: white;
+}
+
+.empty {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.empty .muted {
+  margin: 0;
 }
 
 .banner {

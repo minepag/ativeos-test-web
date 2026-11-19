@@ -1,5 +1,6 @@
 import { type FormEvent, useCallback, useEffect, useState } from "react"
 import { type Order, type OrdersApi, ordersApi, type StatusSummary } from "./api/orders.ts"
+import { matchesCliente } from "./orders/search.ts"
 import {
   allowedTransitions,
   formatCents,
@@ -149,6 +150,7 @@ function OrderPanel({
 
 export function App({ api = ordersApi }: { api?: OrdersApi }) {
   const [filter, setFilter] = useState<OrderStatus | null>(null)
+  const [search, setSearch] = useState("")
   const [orders, setOrders] = useState<Order[] | null>(null)
   const [summary, setSummary] = useState<StatusSummary[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -173,6 +175,9 @@ export function App({ api = ordersApi }: { api?: OrdersApi }) {
   }, [load])
 
   const selected = orders?.find((order) => order.id === selectedId) ?? null
+  const query = search.trim()
+  const visibleOrders =
+    orders && query ? orders.filter((order) => matchesCliente(order.cliente, query)) : orders
 
   return (
     <div className="app">
@@ -204,18 +209,29 @@ export function App({ api = ordersApi }: { api?: OrdersApi }) {
         }}
       />
 
-      <nav className="filters" aria-label="Filtrar por status">
-        {[null, ...orderStatuses].map((status) => (
-          <button
-            key={status ?? "todos"}
-            type="button"
-            aria-pressed={filter === status}
-            onClick={() => setFilter(status)}
-          >
-            {status ? statusLabels[status] : "Todos"}
-          </button>
-        ))}
-      </nav>
+      <div className="toolbar">
+        <nav className="filters" aria-label="Filtrar por status">
+          {[null, ...orderStatuses].map((status) => (
+            <button
+              key={status ?? "todos"}
+              type="button"
+              aria-pressed={filter === status}
+              onClick={() => setFilter(status)}
+            >
+              {status ? statusLabels[status] : "Todos"}
+            </button>
+          ))}
+        </nav>
+        <label className="search">
+          Buscar cliente
+          <input
+            type="search"
+            value={search}
+            placeholder="Nome do cliente"
+            onChange={(event) => setSearch(event.target.value)}
+          />
+        </label>
+      </div>
 
       {error && (
         <p role="alert" className="banner">
@@ -224,9 +240,16 @@ export function App({ api = ordersApi }: { api?: OrdersApi }) {
       )}
 
       <main className="content">
-        {orders === null ? (
+        {visibleOrders === null ? (
           <p className="muted">Carregando pedidos…</p>
-        ) : orders.length === 0 ? (
+        ) : visibleOrders.length === 0 && query ? (
+          <div className="empty">
+            <p className="muted">Nenhum pedido encontrado para “{query}”.</p>
+            <button type="button" onClick={() => setSearch("")}>
+              Limpar busca
+            </button>
+          </div>
+        ) : visibleOrders.length === 0 ? (
           <p className="muted">Nenhum pedido aqui.</p>
         ) : (
           <table>
@@ -239,7 +262,7 @@ export function App({ api = ordersApi }: { api?: OrdersApi }) {
               </tr>
             </thead>
             <tbody>
-              {orders.map((order) => (
+              {visibleOrders.map((order) => (
                 <tr
                   key={order.id}
                   aria-selected={order.id === selectedId}

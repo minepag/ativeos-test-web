@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react"
+import { render, screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it } from "vitest"
 import { App } from "../src/App.tsx"
@@ -32,6 +32,49 @@ describe("painel de pedidos", () => {
     )
     expect(await screen.findByText("Bruno Lima")).toBeInTheDocument()
     expect(rows()).toHaveLength(1)
+  })
+
+  it("busca pelo cliente sem diferenciar maiúsculas e acentos", async () => {
+    const user = renderApp()
+    await screen.findByText("Fábio Nunes")
+    await user.type(screen.getByLabelText("Buscar cliente"), "FABIO")
+    expect(rows()).toHaveLength(1)
+    expect(rows()[0]).toHaveTextContent("Fábio Nunes")
+  })
+
+  it("combina a busca com o filtro de status", async () => {
+    const user = renderApp()
+    await screen.findByText("Fábio Nunes")
+    // "a" aparece em vários clientes; só Ana Souza e Fábio Nunes estão pendentes.
+    await user.type(screen.getByLabelText("Buscar cliente"), "a")
+    expect(rows().length).toBeGreaterThan(2)
+    await user.click(
+      within(screen.getByRole("navigation", { name: "Filtrar por status" })).getByRole("button", {
+        name: "Pendente",
+      }),
+    )
+    await waitFor(() => expect(rows()).toHaveLength(2))
+    expect(rows()[0]).toHaveTextContent("Fábio Nunes")
+    expect(rows()[1]).toHaveTextContent("Ana Souza")
+
+    await user.clear(screen.getByLabelText("Buscar cliente"))
+    await user.type(screen.getByLabelText("Buscar cliente"), "bruno")
+    expect(screen.queryByRole("table")).toBeNull()
+    expect(screen.getByText("Nenhum pedido encontrado para “bruno”.")).toBeVisible()
+  })
+
+  it("mostra o estado vazio da busca e limpa a busca", async () => {
+    const user = renderApp()
+    await screen.findByText("Fábio Nunes")
+    const search = screen.getByLabelText("Buscar cliente")
+    await user.type(search, "  Zélia ")
+    expect(screen.queryByRole("table")).toBeNull()
+    expect(screen.getByText("Nenhum pedido encontrado para “Zélia”.")).toBeVisible()
+
+    await user.click(screen.getByRole("button", { name: "Limpar busca" }))
+    expect(search).toHaveValue("")
+    expect(rows()).toHaveLength(6)
+    expect(screen.queryByRole("button", { name: "Limpar busca" })).toBeNull()
   })
 
   it("cria um pedido pendente e valida o formulário", async () => {
