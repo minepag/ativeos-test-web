@@ -252,34 +252,36 @@ export function App({ api = ordersApi }: { api?: OrdersApi }) {
         ) : visibleOrders.length === 0 ? (
           <p className="muted">Nenhum pedido aqui.</p>
         ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Cliente</th>
-                <th className="number">Valor</th>
-                <th>Status</th>
-                <th>Criado em</th>
-              </tr>
-            </thead>
-            <tbody>
-              {visibleOrders.map((order) => (
-                <tr
-                  key={order.id}
-                  aria-selected={order.id === selectedId}
-                  tabIndex={0}
-                  onClick={() => setSelectedId(order.id)}
-                  onKeyDown={(event) => event.key === "Enter" && setSelectedId(order.id)}
-                >
-                  <td>{order.cliente}</td>
-                  <td className="number">{formatCents(order.valorCentavos)}</td>
-                  <td>
-                    <StatusBadge status={order.status} />
-                  </td>
-                  <td>{dateTime.format(new Date(order.criadoEm))}</td>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th className="number">Valor</th>
+                  <th>Status</th>
+                  <th>Criado em</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {visibleOrders.map((order) => (
+                  <tr
+                    key={order.id}
+                    aria-selected={order.id === selectedId}
+                    tabIndex={0}
+                    onClick={() => setSelectedId(order.id)}
+                    onKeyDown={(event) => event.key === "Enter" && setSelectedId(order.id)}
+                  >
+                    <td>{order.cliente}</td>
+                    <td className="number">{formatCents(order.valorCentavos)}</td>
+                    <td>
+                      <StatusBadge status={order.status} />
+                    </td>
+                    <td>{dateTime.format(new Date(order.criadoEm))}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
         {selected && (
           <OrderPanel

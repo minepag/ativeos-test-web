@@ -194,6 +194,11 @@ button.ghost {
   }
 }
 
+.table-wrap {
+  min-width: 0;
+  overflow-x: auto;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -224,6 +229,17 @@ tbody tr {
 tbody tr:hover,
 tbody tr[aria-selected="true"] {
   background: #eef2ff;
+}
+
+@media (max-width: 480px) {
+  table {
+    font-size: 13px;
+  }
+
+  th,
+  td {
+    padding: 8px 6px;
+  }
 }
 
 .number {
